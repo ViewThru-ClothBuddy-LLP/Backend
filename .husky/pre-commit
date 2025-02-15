@@ -1,5 +1,3 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
 
 echo "Checking for errors before pushing..."
 
@@ -8,7 +6,6 @@ npx tsc --noEmit
 
 # Optional: Run linting
 npm run prettier
-
 
 
 echo "Code passed all checks! Pushing..."
