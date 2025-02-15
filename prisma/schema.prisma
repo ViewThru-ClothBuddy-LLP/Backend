@@ -22,14 +22,15 @@ model User {
   updatedAt     DateTime @updatedAt
 
   Buyer  Buyer?  
-  Seller Seller? 
+  Seller Seller?  
 
   @@map("users")
 }
 
 model Buyer {
   id      Int    @id @default(autoincrement())
-  user    User   @relation(fields: [id], references: [id])
+  userId  Int?    @unique  
+  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade) 
   address String?
   budget  Float?
 
@@ -38,12 +39,76 @@ model Buyer {
 
 model Seller {
   id            Int    @id @default(autoincrement())
-  user          User   @relation(fields: [id], references: [id])
+  user          User   @relation(fields: [userId], references: [id], onDelete: Cascade) // Fixed
+  userId        Int    @unique  
   storeName     String
   gstNumber     String @unique
   adharNumber   String @unique
   panCardNumber String @unique
 
+  products      Product[]
+
   @@map("sellers")
 }
 
+model Product {
+  id               Int             @id @default(autoincrement())
+  title            String
+  description      String
+  price            Float
+  sellerId        Int
+  seller          Seller           @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+
+  productDetails  ProductDetails?  @relation
+ 
+  variants        ProductVariant[]
+  images          ProductImage[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  
+
+  @@map("products")
+  @@index([price])  
+  @@index([sellerId])  
+}
+
+model ProductDetails {
+  id               Int      @id @default(autoincrement())
+  product          Product  @relation(fields: [productId], references: [id], onDelete: Cascade) 
+  productId        Int      @unique  
+
+  fabricType       Json    
+  origin           String
+  closureType      String
+  countryOfOrigin  String
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("product_details")
+  @@index([countryOfOrigin])  
+}
+
+model ProductVariant {
+  id          Int      @id @default(autoincrement())
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId   Int
+  color       String
+  size        String
+  stock       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("product_variants")
+}
+
+model ProductImage {
+  id         Int      @id @default(autoincrement())
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  Int
+  url        String
+  createdAt  DateTime @default(now())
+
+  @@map("product_images")
+}
