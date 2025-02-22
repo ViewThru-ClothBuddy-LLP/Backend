@@ -10,6 +10,7 @@ import express from "express";
 import userRoutes from "./user.routes";
 import cartRoutes from "./cart.routes";
 import orderRoutes from "./order.routes";
+import productRoutes from "./products.routes";
 
 const router = express.Router();
 
@@ -19,5 +20,7 @@ router.use("/user", userRoutes);
 router.use("/carts", cartRoutes);
 // order routes
 router.use("/orders", orderRoutes);
+// product routes
+router.use("/products", productRoutes);
 
 export default router;
