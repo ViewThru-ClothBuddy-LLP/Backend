@@ -26,6 +26,8 @@ model User {
   cart   Cart?   @relation("UserCart")
   orders Order[]
 
+  products Product[] @relation("SellerProducts")
+
   @@map("users")
 }
 
@@ -71,4 +73,22 @@ model Order {
 
   // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  sellerId    Int // Foreign Key referencing User (Seller)
+  name        String
+  description String
+  price       Decimal
+  stock       Int
+  discount    Int
+  category    String
+  images      String[] // Array of image URLs
+  createdAt   DateTime @default(now())
+
+  // Relations
+  seller User @relation("SellerProducts", fields: [sellerId], references: [id], onDelete: Cascade)
+
+  @@map("products")
 }
