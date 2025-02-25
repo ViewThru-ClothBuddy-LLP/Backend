@@ -1,18 +1,14 @@
-import express, { Request, Response } from "express";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import express from "express";
 import { CartController } from "../apis/cart/controller/cart.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
-import { AuthenticatedRequest } from "../types/auth";
 
 const router = express.Router();
 
-router.get("/", authMiddleware, (req: Request, res: Response) =>
-  CartController.getCart(req as AuthenticatedRequest, res)
-);
-router.post("/add", authMiddleware, (req: Request, res: Response) =>
-  CartController.addToCart(req as AuthenticatedRequest, res)
-);
-router.post("/remove", authMiddleware, (req: Request, res: Response) =>
-  CartController.removeFromCart(req as AuthenticatedRequest, res)
-);
+const asyncHandler = (fn: any) => (req: any, res: any, next: any) => Promise.resolve(fn(req, res, next)).catch(next);
+
+router.get("/", authMiddleware, asyncHandler(CartController.getCart));
+router.post("/add", authMiddleware, asyncHandler(CartController.addToCart));
+router.post("/remove", authMiddleware, asyncHandler(CartController.removeFromCart));
 
 export default router;
