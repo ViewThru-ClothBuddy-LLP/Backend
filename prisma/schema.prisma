@@ -21,12 +21,12 @@ model User {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  Buyer  Buyer?
-  Seller Seller?
-  cart   Cart?   @relation("UserCart")
-  orders Order[]
-
+  Buyer    Buyer?
+  Seller   Seller?
+  cart     Cart?     @relation("UserCart")
+  orders   Order[]
   products Product[] @relation("SellerProducts")
+  reviews  Review[]
 
   @@map("users")
 }
@@ -47,6 +47,8 @@ model Seller {
   gstNumber     String @unique
   adharNumber   String @unique
   panCardNumber String @unique
+
+  products Product[]
 
   @@map("sellers")
 }
@@ -80,7 +82,7 @@ model Product {
   sellerId    Int // Foreign Key referencing User (Seller)
   name        String
   description String
-  price       Decimal
+  price       Float
   stock       Int
   discount    Int
   category    String
@@ -88,7 +90,23 @@ model Product {
   createdAt   DateTime @default(now())
 
   // Relations
-  seller User @relation("SellerProducts", fields: [sellerId], references: [id], onDelete: Cascade)
+  seller  User     @relation("SellerProducts", fields: [sellerId], references: [id], onDelete: Cascade, map: "FK_Product_Seller")
+  reviews Review[]
+  Seller  Seller   @relation(fields: [sellerId], references: [id])
 
   @@map("products")
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    Int
+  productId String
+  rating    Float
+  comment   String?
+  imageUrl  String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
