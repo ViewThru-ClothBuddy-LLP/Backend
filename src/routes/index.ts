@@ -12,6 +12,7 @@ import cartRoutes from "./cart.routes";
 import orderRoutes from "./order.routes";
 import productRoutes from "./products.routes";
 import reviewRoutes from "./review.routes";
+import feedbackRoutes from "./feedback.routes";
 
 const router = express.Router();
 
@@ -25,4 +26,6 @@ router.use("/orders", orderRoutes);
 router.use("/products", productRoutes);
 // review routes
 router.use("/reviews", reviewRoutes);
+// feedback routes
+router.use("/feedbacks", feedbackRoutes);
 export default router;
