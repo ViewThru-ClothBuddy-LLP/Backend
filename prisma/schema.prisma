@@ -21,10 +21,13 @@ model User {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  Buyer  Buyer?
-  Seller Seller?
-  cart   Cart?   @relation("UserCart")
-  orders Order[]
+  Buyer    Buyer?
+  Seller   Seller?
+  cart     Cart?      @relation("UserCart")
+  orders   Order[]
+  products Product[]  @relation("SellerProducts")
+  reviews  Review[]
+  feedback Feedback[]
 
   @@map("users")
 }
@@ -45,6 +48,8 @@ model Seller {
   gstNumber     String @unique
   adharNumber   String @unique
   panCardNumber String @unique
+
+  products Product[]
 
   @@map("sellers")
 }
@@ -71,4 +76,52 @@ model Order {
 
   // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  sellerId    Int // Foreign Key referencing User (Seller)
+  name        String
+  description String
+  price       Float
+  stock       Int
+  discount    Int
+  category    String
+  images      String[] // Array of image URLs
+  createdAt   DateTime @default(now())
+
+  // Relations
+  seller   User       @relation("SellerProducts", fields: [sellerId], references: [id], onDelete: Cascade, map: "FK_Product_Seller")
+  reviews  Review[]
+  Seller   Seller     @relation(fields: [sellerId], references: [id])
+  Feedback Feedback[]
+
+  @@map("products")
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    Int
+  productId String
+  rating    Float
+  comment   String?
+  imageUrl  String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Feedback {
+  id        String   @id @default(uuid())
+  userId    Int
+  message   String
+  imageUrl  String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Product   Product? @relation(fields: [productId], references: [id])
+  productId String?
 }
